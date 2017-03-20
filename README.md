@@ -1,46 +1,57 @@
 # GmailBackground
 A small library to send a email in background without user interaction
+## Why this fork?
+I used to use the original lib https://github.com/yesidlazaro/GmailBackground for my apps and found some issues listed [here](https://github.com/yesidlazaro/GmailBackground/issues). Also, made some PR to contribute but it seems the author is not fast enough on the merging these PRs. So I create this fork repo and make it available via [jitpack](https://jitpack.io) for everyone need this.
+
+Features and bugs fixings included:
+- Fix `OnSuccessCallback` and `OnFailCallback` not being called when `.withProcessVisibility(false)`
+- Add `sender name` beside `sender email`
+- Add feature to ignore use `default session` from `java mail`. More detail [here](http://docs.oracle.com/javaee/6/api/javax/mail/Session.html#getDefaultInstance).
+- Make the lib options be more flexible, add `cc` and `bcc` addresses options
+- Some refactoring
+
+## Usage
 ```java
-        BackgroundMail.newBuilder(this)
-                .withUsername("username@gmail.com")
-                .withPassword("password12345")
-                .withSenderName("Your sender name")
-                .withMailTo("to-email@gmail.com")
-                .withMailCc("cc-email@gmail.com")
-                .withMailBcc("bcc-email@gmail.com")
-                .withType(BackgroundMail.TYPE_PLAIN)
-                .withSubject("this is the subject")
-                .withBody("this is the body")
-                .withOnSuccessCallback(new BackgroundMail.OnSuccessCallback() {
-                    @Override
-                    public void onSuccess() {
-                        //do some magic
-                    }
-                })
-                .withOnFailCallback(new BackgroundMail.OnFailCallback() {
-                    @Override
-                    public void onFail() {
-                        //do some magic
-                    }
-                })
-                .send();
+BackgroundMail.newBuilder(this)
+        .withUsername("username@gmail.com")
+        .withPassword("password12345")
+        .withSenderName("Your sender name")
+        .withMailTo("to-email@gmail.com")
+        .withMailCc("cc-email@gmail.com")
+        .withMailBcc("bcc-email@gmail.com")
+        .withType(BackgroundMail.TYPE_PLAIN)
+        .withSubject("this is the subject")
+        .withBody("this is the body")
+        .withOnSuccessCallback(new BackgroundMail.OnSuccessCallback() {
+            @Override
+            public void onSuccess() {
+                //do some magic
+            }
+        })
+        .withOnFailCallback(new BackgroundMail.OnFailCallback() {
+            @Override
+            public void onFail() {
+                //do some magic
+            }
+        })
+        .send();
 ```
 If you have the feature for user to change sender `username` and `password`. You should ignore use default session. See more detail [here](http://docs.oracle.com/javaee/6/api/javax/mail/Session.html#getDefaultInstance)
 ```java
 .withUseDefaultSession(false)
 ```
-**Gradle via jitpack**
+**Installation**
 
 ```groovy
- repositories {
-        // ...
-        maven { url "https://jitpack.io" }
- }
+repositories {
+    // ...
+    maven { url "https://jitpack.io" }
+}
 ```
 ```groovy
- dependencies {
-	        compile 'com.github.yesidlazaro:GmailBackground:1.2.0'
-	}
+dependencies {
+    compile 'com.github.yesidlazaro:GmailBackground:1.2.0'
+}
 ```
 
 **Permissions**
@@ -50,9 +61,9 @@ If you have the feature for user to change sender `username` and `password`. You
 ```
 **attachments**
 
- for attachments you need set READ_EXTERNAL_STORAGE permission in your manifiest 
- ```xml
- <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+for attachments you need set READ_EXTERNAL_STORAGE permission in your manifiest
+```xml
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 ```
 Based on https://github.com/kristijandraca/BackgroundMailLibrary (code cleanup, tweaks, and jitpack support)
 
@@ -68,8 +79,8 @@ Based on https://github.com/kristijandraca/BackgroundMailLibrary (code cleanup, 
 -dontwarn java.beans.**
 ```
 
-#license
-Copyright 2015 Yesid Lazaro
+## License
+Copyright 2017 Luong Vo
 
 Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements. See the NOTICE file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to you under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
