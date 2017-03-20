@@ -25,6 +25,7 @@ import javax.mail.internet.MimeMultipart;
 
 public class GmailSender extends javax.mail.Authenticator {
     private final String GMAIL_HOST = "smtp.gmail.com";
+
     private String user;
     private String password;
     private Session session;
@@ -56,28 +57,49 @@ public class GmailSender extends javax.mail.Authenticator {
         return new PasswordAuthentication(user, password);
     }
 
-    public synchronized void sendMail(String subject, String body, String senderEmail, String senderName, String recipients, String type) throws Exception {
+    public synchronized void sendMail(String subject, String body, String senderEmail, String senderName,
+                                      String mailTo, String mailCc, String mailBcc, String type) throws Exception {
         MimeMessage message = new MimeMessage(session);
-        DataHandler handler = new DataHandler(new ByteArrayDataSource(body.getBytes(), type));
         message.setFrom(TextUtils.isEmpty(senderName) ?
                 new InternetAddress(senderEmail) :
                 new InternetAddress(senderEmail, senderName));
         message.setSubject(subject);
 
-        message.setText(body);
+        DataHandler handler = new DataHandler(new ByteArrayDataSource(body.getBytes(), type));
         message.setDataHandler(handler);
+        message.setText(body);
         if (_multipart.getCount() > 0) {
             BodyPart messageBodyPart = new MimeBodyPart();
             messageBodyPart.setText(body);
             _multipart.addBodyPart(messageBodyPart);
             message.setContent(_multipart);
         }
-        if (recipients.indexOf(',') > 0)
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipients));
-        else
-            message.setRecipient(Message.RecipientType.TO, new InternetAddress(recipients));
-        Transport.send(message);
 
+        if (!TextUtils.isEmpty(mailTo)) {
+            if (mailTo.indexOf(',') > 0) {
+                message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(mailTo));
+            } else {
+                message.setRecipient(Message.RecipientType.TO, new InternetAddress(mailTo));
+            }
+        }
+
+        if (!TextUtils.isEmpty(mailCc)) {
+            if (mailCc.indexOf(',') > 0) {
+                message.setRecipients(Message.RecipientType.CC, InternetAddress.parse(mailCc));
+            } else {
+                message.setRecipient(Message.RecipientType.CC, new InternetAddress(mailCc));
+            }
+        }
+
+        if (!TextUtils.isEmpty(mailBcc)) {
+            if (mailBcc.indexOf(',') > 0) {
+                message.setRecipients(Message.RecipientType.BCC, InternetAddress.parse(mailBcc));
+            } else {
+                message.setRecipient(Message.RecipientType.BCC, new InternetAddress(mailBcc));
+            }
+        }
+
+        Transport.send(message);
     }
 
     public void addAttachment(String filename) throws Exception {
@@ -109,10 +131,7 @@ public class GmailSender extends javax.mail.Authenticator {
         }
 
         public String getContentType() {
-            if (type == null)
-                return "application/octet-stream";
-            else
-                return type;
+            return type != null ? type : "application/octet-stream";
         }
 
         public InputStream getInputStream() throws IOException {
