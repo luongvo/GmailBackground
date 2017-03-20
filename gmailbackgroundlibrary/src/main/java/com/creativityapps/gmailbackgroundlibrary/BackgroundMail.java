@@ -21,7 +21,7 @@ import java.util.List;
 
 
 public class BackgroundMail {
-    String TAG = "BackgroundMail";
+    private final String TAG = BackgroundMail.class.getSimpleName();
     private String username;
     private String password;
     private String senderName;
@@ -29,6 +29,7 @@ public class BackgroundMail {
     private String subject;
     private String body;
     private String type;
+    private boolean useDefaultSession;
     private String sendingMessage;
     private String sendingMessageSuccess;
     private String sendingMessageError;
@@ -70,6 +71,7 @@ public class BackgroundMail {
         subject = builder.subject;
         body = builder.body;
         type = builder.type;
+        useDefaultSession = builder.useDefaultSession;
         setSendingMessage(builder.sendingMessage);
         setSendingMessageSuccess(builder.sendingMessageSuccess);
         setSendingMessageError(builder.sendingMessageError);
@@ -123,6 +125,14 @@ public class BackgroundMail {
     @NonNull
     public String getType() {
         return type;
+    }
+
+    public void setUseDefaultSession(boolean useDefaultSession) {
+        this.useDefaultSession = useDefaultSession;
+    }
+
+    public boolean isUseDefaultSession() {
+        return useDefaultSession;
     }
 
     public void showVisibleProgress(boolean state) {
@@ -281,7 +291,7 @@ public class BackgroundMail {
         @Override
         protected Boolean doInBackground(String... arg0) {
             try {
-                GmailSender sender = new GmailSender(username, password);
+                GmailSender sender = new GmailSender(username, password, useDefaultSession);
                 if (!attachments.isEmpty()) {
                     for (int i = 0; i < attachments.size(); i++) {
                         if (!attachments.get(i).isEmpty()) {
@@ -331,6 +341,7 @@ public class BackgroundMail {
         private String subject;
         private String body;
         private String type = BackgroundMail.TYPE_PLAIN;
+        private boolean useDefaultSession = true;
         private ArrayList<String> attachments = new ArrayList<>();
         private String sendingMessage;
         private String sendingMessageSuccess;
@@ -394,6 +405,11 @@ public class BackgroundMail {
         //set email mime type
         public Builder withType(@NonNull String type) {
             this.type = type;
+            return this;
+        }
+
+        public Builder withUseDefaultSession(boolean useDefaultSession) {
+            this.useDefaultSession = useDefaultSession;
             return this;
         }
 
