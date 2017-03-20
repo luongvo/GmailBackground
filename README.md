@@ -1,7 +1,10 @@
 # GmailBackground
 A small library to send a email in background without user interaction
+
+[![](https://jitpack.io/v/luongvo/GmailBackground.svg)](https://jitpack.io/#luongvo/GmailBackground)
+
 ## Why this fork?
-I used to use the original lib https://github.com/yesidlazaro/GmailBackground for my apps and found some issues listed [here](https://github.com/yesidlazaro/GmailBackground/issues). Also, made some PR to contribute but it seems the author is not fast enough on the merging these PRs. So I create this fork repo and make it available via [jitpack](https://jitpack.io) for everyone need this.
+I used to use the original lib https://github.com/yesidlazaro/GmailBackground for my apps and found some issues listed [here](https://github.com/yesidlazaro/GmailBackground/issues). Also, made some PRs to contribute but it seems the author is not fast enough on the merging these PRs. So I create this fork repo and make it available via [jitpack](https://jitpack.io) for everyone need this.
 
 Features and bugs fixings included:
 - Fix `OnSuccessCallback` and `OnFailCallback` not being called when `.withProcessVisibility(false)`
@@ -50,7 +53,7 @@ repositories {
 ```
 ```groovy
 dependencies {
-    compile 'com.github.yesidlazaro:GmailBackground:1.2.0'
+    compile 'com.github.luongvo:GmailBackground:2.0.0'
 }
 ```
 
