@@ -1,12 +1,15 @@
 # GmailBackground
-A small library to send a email in background without user interaction
+A small library to send an email in background without user interaction
+
+[![](https://jitpack.io/v/luongvo/GmailBackground.svg)](https://jitpack.io/#luongvo/GmailBackground)
+
 ## Why this fork?
-I used to use the original lib https://github.com/yesidlazaro/GmailBackground for my apps and found some issues listed [here](https://github.com/yesidlazaro/GmailBackground/issues). Also, made some PR to contribute but it seems the author is not fast enough on the merging these PRs. So I create this fork repo and make it available via [jitpack](https://jitpack.io) for everyone need this.
+I used to use the original lib https://github.com/yesidlazaro/GmailBackground for my apps and found some issues listed [here](https://github.com/yesidlazaro/GmailBackground/issues). Also, made some PRs to contribute but it seems the author is not fast enough on the merging these PRs. So I create this fork repo and make it available via [jitpack](https://jitpack.io) for everyone need this.
 
 Features and bugs fixings included:
-- Fix `OnSuccessCallback` and `OnFailCallback` not being called when `.withProcessVisibility(false)`
-- Add `sender name` beside `sender email`
-- Add feature to ignore use `default session` from `java mail`. More detail [here](http://docs.oracle.com/javaee/6/api/javax/mail/Session.html#getDefaultInstance).
+- Fix `OnSuccessCallback` and `OnFailCallback` not being called when `.withProcessVisibility(false)` [#12](https://github.com/yesidlazaro/GmailBackground/issues/12) [#28](https://github.com/yesidlazaro/GmailBackground/issues/28)
+- Add `sender name` beside `sender email` [#26](https://github.com/yesidlazaro/GmailBackground/issues/26)
+- Add feature to ignore use `default session` from `java mail` [#21](https://github.com/yesidlazaro/GmailBackground/issues/21). More detail [here](http://docs.oracle.com/javaee/6/api/javax/mail/Session.html#getDefaultInstance).
 - Make the lib options be more flexible, add `cc` and `bcc` addresses options
 - Some refactoring
 
@@ -50,7 +53,7 @@ repositories {
 ```
 ```groovy
 dependencies {
-    compile 'com.github.yesidlazaro:GmailBackground:1.2.0'
+    compile 'com.github.luongvo:GmailBackground:2.0.0'
 }
 ```
 
