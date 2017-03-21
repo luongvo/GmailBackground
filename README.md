@@ -9,6 +9,7 @@ I used to use the original lib https://github.com/yesidlazaro/GmailBackground fo
 Features and bugs fixings included:
 - Fix `OnSuccessCallback` and `OnFailCallback` not being called when `.withProcessVisibility(false)` [#12](https://github.com/yesidlazaro/GmailBackground/issues/12) [#28](https://github.com/yesidlazaro/GmailBackground/issues/28)
 - Add `sender name` beside `sender email` [#26](https://github.com/yesidlazaro/GmailBackground/issues/26)
+- Attachment file name fixing [#7](https://github.com/yesidlazaro/GmailBackground/issues/7)
 - Add feature to ignore use `default session` from `java mail` [#21](https://github.com/yesidlazaro/GmailBackground/issues/21). More detail [here](http://docs.oracle.com/javaee/6/api/javax/mail/Session.html#getDefaultInstance).
 - Make the lib options be more flexible, add `cc` and `bcc` addresses options
 - Some refactoring
