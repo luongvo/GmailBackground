@@ -53,9 +53,10 @@ repositories {
 ```
 ```groovy
 dependencies {
-    compile 'com.github.luongvo:GmailBackground:2.0.0'
+    compile 'com.github.luongvo:GmailBackground:{latest-version}'
 }
 ```
+Find the `{latest-version}` in the badge at the top of this readme file.
 
 **Permissions**
 ```xml
