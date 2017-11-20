@@ -26,6 +26,8 @@ BackgroundMail.newBuilder(this)
         .withType(BackgroundMail.TYPE_PLAIN)
         .withSubject("this is the subject")
         .withBody("this is the body")
+        .withAttachments(Environment.getExternalStorageDirectory().getPath() + "/test.txt")
+        .withProcessVisibility(false)
         .withOnSuccessCallback(new BackgroundMail.OnSuccessCallback() {
             @Override
             public void onSuccess() {
