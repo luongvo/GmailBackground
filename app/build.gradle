@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.creativityapps.gmailbackground"
-        minSdkVersion 11
+        minSdkVersion 16
         targetSdkVersion 25
         versionCode 2
         versionName "1.1"
@@ -24,4 +24,10 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.0.1'
     compile 'com.android.support:design:25.0.1'
     compile project(':gmailbackgroundlibrary')
+
+    // for sending attachment
+    api("com.github.hotchemi:permissionsdispatcher:3.0.1") {
+        exclude module: "support-v13"
+    }
+    annotationProcessor "com.github.hotchemi:permissionsdispatcher-processor:3.0.1"
 }
