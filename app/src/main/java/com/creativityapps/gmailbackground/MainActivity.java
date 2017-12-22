@@ -7,7 +7,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -72,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         BackgroundMail.newBuilder(this)
                 .withUsername("username@gmail.com")
                 .withPassword("password12345")
+                .withPort(587)
                 .withSenderName("Your sender name")
                 .withMailTo("to-email@gmail.com")
                 .withMailCc("cc-email@gmail.com")

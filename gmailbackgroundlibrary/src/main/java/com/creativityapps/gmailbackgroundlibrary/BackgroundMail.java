@@ -25,6 +25,7 @@ public class BackgroundMail {
 
     private String username;
     private String password;
+    private int port;
     private String senderName;
     private String mailTo;
     private String mailCc;
@@ -69,6 +70,7 @@ public class BackgroundMail {
         attachments = builder.attachments;
         username = builder.username;
         password = builder.password;
+        port = builder.port;
         senderName = builder.senderName;
         mailTo = builder.mailTo;
         mailCc = builder.mailCc;
@@ -315,7 +317,7 @@ public class BackgroundMail {
         @Override
         protected Boolean doInBackground(String... arg0) {
             try {
-                GmailSender sender = new GmailSender(username, password, useDefaultSession);
+                GmailSender sender = new GmailSender(username, password, port, useDefaultSession);
                 if (!attachments.isEmpty()) {
                     for (int i = 0; i < attachments.size(); i++) {
                         if (!attachments.get(i).isEmpty()) {
@@ -360,6 +362,7 @@ public class BackgroundMail {
         private Context context;
         private String username;
         private String password;
+        private int port;
         private String senderName;
         private String mailTo;
         private String mailCc;
@@ -400,6 +403,11 @@ public class BackgroundMail {
 
         public Builder withPassword(@StringRes int passwordRes) {
             this.password = context.getResources().getString(passwordRes);
+            return this;
+        }
+
+        public Builder withPort(int port) {
+            this.port = port;
             return this;
         }
 
