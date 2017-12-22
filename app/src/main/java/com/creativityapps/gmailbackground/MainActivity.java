@@ -67,11 +67,12 @@ public class MainActivity extends AppCompatActivity {
     void sendTestEmail() {
         // create a `Test.txt` and locate it on device sdcard and run the example
         String fileName = Environment.getExternalStorageDirectory().getPath() + "/Test.txt";
-
+        
         BackgroundMail.newBuilder(this)
                 .withUsername("username@gmail.com")
                 .withPassword("password12345")
                 .withPort(587)
+                .withSmpts(true)
                 .withSenderName("Your sender name")
                 .withMailTo("to-email@gmail.com")
                 .withMailCc("cc-email@gmail.com")
