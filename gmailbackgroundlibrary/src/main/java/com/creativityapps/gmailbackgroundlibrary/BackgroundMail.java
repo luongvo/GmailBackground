@@ -26,7 +26,7 @@ public class BackgroundMail {
     private String username;
     private String password;
     private int port;
-    private boolean smpts;
+    private boolean smtps;
     private String senderName;
     private String mailTo;
     private String mailCc;
@@ -72,7 +72,7 @@ public class BackgroundMail {
         username = builder.username;
         password = builder.password;
         port = builder.port;
-        smpts = builder.smpts;
+        smtps = builder.smtps;
         senderName = builder.senderName;
         mailTo = builder.mailTo;
         mailCc = builder.mailCc;
@@ -319,7 +319,7 @@ public class BackgroundMail {
         @Override
         protected Boolean doInBackground(String... arg0) {
             try {
-                GmailSender sender = new GmailSender(username, password, port, smpts, useDefaultSession);
+                GmailSender sender = new GmailSender(username, password, port, smtps, useDefaultSession);
                 if (!attachments.isEmpty()) {
                     for (int i = 0; i < attachments.size(); i++) {
                         if (!attachments.get(i).isEmpty()) {
@@ -365,7 +365,7 @@ public class BackgroundMail {
         private String username;
         private String password;
         private int port;
-        private boolean smpts;
+        private boolean smtps;
         private String senderName;
         private String mailTo;
         private String mailCc;
@@ -414,8 +414,8 @@ public class BackgroundMail {
             return this;
         }
 
-        public Builder withSmpts(boolean smpts) {
-            this.smpts = smpts;
+        public Builder withSmtps(boolean smtps) {
+            this.smtps = smtps;
             return this;
         }
 
