@@ -26,7 +26,7 @@ public class BackgroundMail {
     private String username;
     private String password;
     private int port;
-    private boolean smtps;
+    private String protocol;
     private String senderName;
     private String mailTo;
     private String mailCc;
@@ -72,7 +72,7 @@ public class BackgroundMail {
         username = builder.username;
         password = builder.password;
         port = builder.port;
-        smtps = builder.smtps;
+        protocol = builder.protocol;
         senderName = builder.senderName;
         mailTo = builder.mailTo;
         mailCc = builder.mailCc;
@@ -319,7 +319,7 @@ public class BackgroundMail {
         @Override
         protected Boolean doInBackground(String... arg0) {
             try {
-                GmailSender sender = new GmailSender(username, password, port, smtps, useDefaultSession);
+                GmailSender sender = new GmailSender(username, password, port, protocol, useDefaultSession);
                 if (!attachments.isEmpty()) {
                     for (int i = 0; i < attachments.size(); i++) {
                         if (!attachments.get(i).isEmpty()) {
@@ -362,10 +362,21 @@ public class BackgroundMail {
 
     public static final class Builder {
         private Context context;
+
         private String username;
         private String password;
-        private int port;
-        private boolean smtps;
+        private int port = GmailSender.DEFAULT_PORT;
+        private String protocol = GmailSender.DEFAULT_PROTOCOL;
+
+        private boolean useDefaultSession = true;
+        private String sendingMessage;
+        private String sendingMessageSuccess;
+        private String sendingMessageError;
+        private boolean processVisibility = true;
+
+        private OnSuccessCallback onSuccessCallback;
+        private OnFailCallback onFailCallback;
+
         private String senderName;
         private String mailTo;
         private String mailCc;
@@ -373,14 +384,8 @@ public class BackgroundMail {
         private String subject = "";
         private String body = "";
         private String type = BackgroundMail.TYPE_PLAIN;
-        private boolean useDefaultSession = true;
         private ArrayList<String> attachments = new ArrayList<>();
-        private String sendingMessage;
-        private String sendingMessageSuccess;
-        private String sendingMessageError;
-        private boolean processVisibility = true;
-        private OnSuccessCallback onSuccessCallback;
-        private OnFailCallback onFailCallback;
+
 
         private Builder(Context context) {
             this.context = context;
@@ -389,35 +394,101 @@ public class BackgroundMail {
             this.sendingMessageError = context.getString(R.string.msg_error_sending_email);
         }
 
-        public Builder withUsername(@NonNull String username) {
+        // sending settings
+
+        public Builder username(@NonNull String username) {
             this.username = username;
             return this;
         }
 
-        public Builder withUsername(@StringRes int usernameRes) {
+        public Builder username(@StringRes int usernameRes) {
             this.username = context.getResources().getString(usernameRes);
             return this;
         }
 
-        public Builder withPassword(@NonNull String password) {
+        public Builder password(@NonNull String password) {
             this.password = password;
             return this;
         }
 
-        public Builder withPassword(@StringRes int passwordRes) {
+        public Builder password(@StringRes int passwordRes) {
             this.password = context.getResources().getString(passwordRes);
             return this;
         }
 
-        public Builder withPort(int port) {
+        public Builder port(int port) {
             this.port = port;
             return this;
         }
 
-        public Builder withSmtps(boolean smtps) {
-            this.smtps = smtps;
+        public Builder protocol(String protocol) {
+            this.protocol = protocol;
             return this;
         }
+
+        //set email mime type
+        public Builder type(@NonNull String type) {
+            this.type = type;
+            return this;
+        }
+
+        public Builder type(@StringRes int typeRes) {
+            this.type = context.getResources().getString(typeRes);
+            return this;
+        }
+
+        public Builder useDefaultSession(boolean useDefaultSession) {
+            this.useDefaultSession = useDefaultSession;
+            return this;
+        }
+
+
+        public Builder sendingMessage(String message) {
+            this.sendingMessage = message;
+            return this;
+        }
+
+        public Builder successMessage(String message) {
+            this.sendingMessageSuccess = message;
+            return this;
+        }
+
+        public Builder errorMessage(String message) {
+            this.sendingMessageError = message;
+            return this;
+        }
+
+        public Builder sendingMessage(int stringId) {
+            this.sendingMessage = context.getString(stringId);
+            return this;
+        }
+
+        public Builder successMessage(int stringId) {
+            this.sendingMessageSuccess = context.getString(stringId);
+            return this;
+        }
+
+        public Builder errorMessage(int stringId) {
+            this.sendingMessageError = context.getString(stringId);
+            return this;
+        }
+
+        public Builder processVisibility(boolean visible) {
+            this.processVisibility = visible;
+            return this;
+        }
+
+        public Builder onSuccessCallback(OnSuccessCallback onSuccessCallback) {
+            this.onSuccessCallback = onSuccessCallback;
+            return this;
+        }
+
+        public Builder onFailCallback(OnFailCallback onFailCallback) {
+            this.onFailCallback = onFailCallback;
+            return this;
+        }
+
+        // email values
 
         public Builder withSenderName(@NonNull String senderName) {
             this.senderName = senderName;
@@ -464,22 +535,6 @@ public class BackgroundMail {
             return this;
         }
 
-        //set email mime type
-        public Builder withType(@NonNull String type) {
-            this.type = type;
-            return this;
-        }
-
-        public Builder withUseDefaultSession(boolean useDefaultSession) {
-            this.useDefaultSession = useDefaultSession;
-            return this;
-        }
-
-        public Builder withType(@StringRes int typeRes) {
-            this.type = context.getResources().getString(typeRes);
-            return this;
-        }
-
         public Builder withBody(@NonNull String body) {
             this.body = body;
             return this;
@@ -502,51 +557,6 @@ public class BackgroundMail {
 
         public Builder withAttachments(@ArrayRes int attachmentsRes) {
             this.attachments.addAll(Arrays.asList(context.getResources().getStringArray(attachmentsRes)));
-            return this;
-        }
-
-        public Builder withSendingMessage(@NonNull String sendingMessage) {
-            this.sendingMessage = sendingMessage;
-            return this;
-        }
-
-        public Builder withSendingMessage(@StringRes int sendingMessageRes) {
-            this.sendingMessage = context.getResources().getString(sendingMessageRes);
-            return this;
-        }
-
-        public Builder withSendingMessageSuccess(@Nullable String sendingMessageSuccess) {
-            this.sendingMessageSuccess = sendingMessageSuccess;
-            return this;
-        }
-
-        public Builder withSendingMessageSuccess(@StringRes int sendingMessageSuccessRes) {
-            this.sendingMessageSuccess = context.getResources().getString(sendingMessageSuccessRes);
-            return this;
-        }
-
-        public Builder withSendingMessageError(@Nullable String sendingMessageError) {
-            this.sendingMessageError = sendingMessageError;
-            return this;
-        }
-
-        public Builder withSendingMessageError(@StringRes int sendingMessageError) {
-            this.sendingMessageError = context.getResources().getString(sendingMessageError);
-            return this;
-        }
-
-        public Builder withProcessVisibility(boolean processVisibility) {
-            this.processVisibility = processVisibility;
-            return this;
-        }
-
-        public Builder withOnSuccessCallback(OnSuccessCallback onSuccessCallback) {
-            this.onSuccessCallback = onSuccessCallback;
-            return this;
-        }
-
-        public Builder withOnFailCallback(OnFailCallback onFailCallback) {
-            this.onFailCallback = onFailCallback;
             return this;
         }
 

@@ -69,10 +69,10 @@ public class MainActivity extends AppCompatActivity {
         String fileName = Environment.getExternalStorageDirectory().getPath() + "/Test.txt";
 
         BackgroundMail.newBuilder(this)
-                .withUsername("username@gmail.com")
-                .withPassword("password12345")
-                .withPort(587)
-                .withSmtps(true)
+                .username("username@gmail.com")
+                .password("password12345")
+                .port(587)
+                .protocol("smtps")
                 .withSenderName("Your sender name")
                 .withMailTo("to-email@gmail.com")
                 .withMailCc("cc-email@gmail.com")
@@ -80,15 +80,15 @@ public class MainActivity extends AppCompatActivity {
                 .withSubject("this is the subject")
                 .withBody("this is the body")
                 .withAttachments(fileName)
-                .withUseDefaultSession(false)
-                .withProcessVisibility(true)
-                .withOnSuccessCallback(new BackgroundMail.OnSuccessCallback() {
+                .useDefaultSession(false)
+                .processVisibility(true)
+                .onSuccessCallback(new BackgroundMail.OnSuccessCallback() {
                     @Override
                     public void onSuccess() {
                         //do some magic
                     }
                 })
-                .withOnFailCallback(new BackgroundMail.OnFailCallback() {
+                .onFailCallback(new BackgroundMail.OnFailCallback() {
                     @Override
                     public void onFail() {
                         //do some magic

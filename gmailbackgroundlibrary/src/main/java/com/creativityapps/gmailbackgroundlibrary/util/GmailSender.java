@@ -26,6 +26,7 @@ import javax.mail.internet.MimeMultipart;
 public class GmailSender extends javax.mail.Authenticator {
 
     public static final int DEFAULT_PORT = 465;
+    public static final String DEFAULT_PROTOCOL = "smtp";
 
     private String user;
     private String password;
@@ -36,23 +37,22 @@ public class GmailSender extends javax.mail.Authenticator {
         Security.addProvider(new JSSEProvider());
     }
 
-    public GmailSender(String user, String password, int port, boolean withSmtps, boolean useDefaultSession) {
+    public GmailSender(String user, String password, int port, String protocol, boolean useDefaultSession) {
         this.user = user;
         this.password = password;
 
         String portStr = Integer.toString(port);
-        String smtp = withSmtps ? "smtp" : "smtps";
 
         Properties props = new Properties();
-        props.setProperty("mail.transport.protocol", smtp);
-        props.setProperty("mail.host", smtp + ".gmail.com");
-        props.put("mail." + smtp + ".auth", "true");
-        props.put("mail." + smtp + ".port", portStr);
-        props.put("mail." + smtp + ".socketFactory.port", DEFAULT_PORT);
-        props.put("mail." + smtp + ".socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+        props.setProperty("mail.transport.protocol", protocol);
+        props.setProperty("mail.host", protocol + ".gmail.com");
+        props.put("mail." + protocol + ".auth", "true");
+        props.put("mail." + protocol + ".port", portStr);
+        props.put("mail." + protocol + ".socketFactory.port", portStr);
+        props.put("mail." + protocol + ".socketFactory.class", "javax.net.ssl.SSLSocketFactory");
 
-        props.put("mail." + smtp + ".socketFactory.fallback", "false");
-        props.setProperty("mail." + smtp + ".quitwait", "false");
+        props.put("mail." + protocol + ".socketFactory.fallback", "false");
+        props.setProperty("mail." + protocol + ".quitwait", "false");
 
         session = useDefaultSession ? Session.getDefaultInstance(props, this) : Session.getInstance(props, this);
         _multipart = new MimeMultipart();
