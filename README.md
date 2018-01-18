@@ -1,50 +1,49 @@
 # GmailBackground
 A small library to send an email in background without user interaction
 
-[![](https://jitpack.io/v/luongvo/GmailBackground.svg)](https://jitpack.io/#luongvo/GmailBackground)
+[![](https://jitpack.io/v/e16din/GmailBackground.svg)](https://jitpack.io/#e16din/GmailBackground)
 
 ## Why this fork?
-I used to use the original lib https://github.com/yesidlazaro/GmailBackground for my apps and found some issues listed [here](https://github.com/yesidlazaro/GmailBackground/issues). Also, made some PRs to contribute but it seems the author is not fast enough on the merging these PRs. So I create this fork repo and make it available via [jitpack](https://jitpack.io) for everyone need this.
+Added port and protocol properties to the GmailBackground chain.
 
-Features and bugs fixings included:
-- Fix `OnSuccessCallback` and `OnFailCallback` not being called when `.withProcessVisibility(false)` [#12](https://github.com/yesidlazaro/GmailBackground/issues/12) [#28](https://github.com/yesidlazaro/GmailBackground/issues/28)
-- Add `sender name` beside `sender email` [#26](https://github.com/yesidlazaro/GmailBackground/issues/26)
-- Attachment file name fixing [#7](https://github.com/yesidlazaro/GmailBackground/issues/7)
-- Add feature to ignore use `default session` from `java mail` [#21](https://github.com/yesidlazaro/GmailBackground/issues/21). More detail [here](http://docs.oracle.com/javaee/6/api/javax/mail/Session.html#getDefaultInstance).
-- Make the lib options be more flexible, add `cc` and `bcc` addresses options
-- Some refactoring
+```java
+.port(587)
+.protocol("smpts")
+```
 
 ## Usage
 ```java
 BackgroundMail.newBuilder(this)
-        .withUsername("username@gmail.com")
-        .withPassword("password12345")
-        .withSenderName("Your sender name")
-        .withMailTo("to-email@gmail.com")
-        .withMailCc("cc-email@gmail.com")
-        .withMailBcc("bcc-email@gmail.com")
-        .withType(BackgroundMail.TYPE_PLAIN)
-        .withSubject("this is the subject")
-        .withBody("this is the body")
-        .withAttachments(Environment.getExternalStorageDirectory().getPath() + "/test.txt")
-        .withProcessVisibility(false)
-        .withOnSuccessCallback(new BackgroundMail.OnSuccessCallback() {
-            @Override
-            public void onSuccess() {
-                //do some magic
-            }
-        })
-        .withOnFailCallback(new BackgroundMail.OnFailCallback() {
-            @Override
-            public void onFail() {
-                //do some magic
-            }
-        })
-        .send();
+                .username("username@gmail.com")
+                .password("password12345")
+                .port(587)
+                .protocol("smtps")
+                .withSenderName("Your sender name")
+                .withMailTo("to-email@gmail.com")
+                .withMailCc("cc-email@gmail.com")
+                .withMailBcc("bcc-email@gmail.com")
+                .withSubject("this is the subject")
+                .withBody("this is the body")
+                .withAttachments(fileName)
+                .useDefaultSession(false)
+                .processVisibility(true)
+                .onSuccessCallback(new BackgroundMail.OnSuccessCallback() {
+                    @Override
+                    public void onSuccess() {
+                        //do some magic
+                    }
+                })
+                .onFailCallback(new BackgroundMail.OnFailCallback() {
+                    @Override
+                    public void onFail() {
+                        //do some magic
+                    }
+                })
+                .send();
 ```
 If you have the feature for user to change sender `username` and `password`. You should ignore use default session. See more detail [here](http://docs.oracle.com/javaee/6/api/javax/mail/Session.html#getDefaultInstance)
 ```java
-.withUseDefaultSession(false)
+.useDefaultSession(false)
 ```
 **Installation**
 
@@ -56,7 +55,7 @@ repositories {
 ```
 ```groovy
 dependencies {
-    compile 'com.github.luongvo:GmailBackground:{latest-version}'
+    compile 'com.github.e16din:GmailBackground:{latest-version}'
 }
 ```
 Find the `{latest-version}` in the badge at the top of this readme file.

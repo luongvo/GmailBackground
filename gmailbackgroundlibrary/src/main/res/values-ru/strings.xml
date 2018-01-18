@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="msg_sending_email">Отправка письма…</string>
+    <string name="msg_email_sent_successfully">Ваше сообщение успешно отправлено.</string>
+    <string name="msg_error_sending_email">Опаньки, произошла ошибка.</string>
+</resources>
