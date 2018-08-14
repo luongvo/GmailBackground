@@ -6,7 +6,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.ArrayRes;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.text.TextUtils;
 import android.util.Log;
@@ -33,7 +32,6 @@ public class BackgroundMail {
     private String type;
     private boolean useDefaultSession;
     private String sendingMessage;
-    private boolean processVisibility = true;
     private ArrayList<String> attachments = new ArrayList<>();
     private Context mContext;
     private OnSendingCallback onSendingCallback;
@@ -53,7 +51,6 @@ public class BackgroundMail {
 
     public BackgroundMail(Context context) {
         this.mContext = context;
-        this.sendingMessage = context.getString(R.string.msg_sending_email);
     }
 
     private BackgroundMail(Builder builder) {
@@ -70,7 +67,6 @@ public class BackgroundMail {
         type = builder.type;
         useDefaultSession = builder.useDefaultSession;
         setSendingMessage(builder.sendingMessage);
-        processVisibility = builder.processVisibility;
         setOnSendingCallback(builder.onSendingCallback);
     }
 
@@ -127,14 +123,6 @@ public class BackgroundMail {
 
     public boolean isUseDefaultSession() {
         return useDefaultSession;
-    }
-
-    public void showVisibleProgress(boolean state) {
-        this.processVisibility = state;
-    }
-
-    public boolean isProgressVisible() {
-        return processVisibility;
     }
 
     public void setMailTo(@NonNull String string) {
@@ -263,7 +251,7 @@ public class BackgroundMail {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            if (processVisibility) {
+            if (!TextUtils.isEmpty(sendingMessage)) {
                 progressDialog = new ProgressDialog(mContext);
                 progressDialog.setMessage(sendingMessage);
                 progressDialog.setCancelable(false);
@@ -321,12 +309,10 @@ public class BackgroundMail {
         private boolean useDefaultSession = true;
         private ArrayList<String> attachments = new ArrayList<>();
         private String sendingMessage;
-        private boolean processVisibility = true;
         private OnSendingCallback onSendingCallback;
 
         private Builder(Context context) {
             this.context = context;
-            this.sendingMessage = context.getString(R.string.msg_sending_email);
         }
 
         public Builder withUsername(@NonNull String username) {
@@ -442,11 +428,6 @@ public class BackgroundMail {
 
         public Builder withSendingMessage(@StringRes int sendingMessageRes) {
             this.sendingMessage = context.getResources().getString(sendingMessageRes);
-            return this;
-        }
-
-        public Builder withProcessVisibility(boolean processVisibility) {
-            this.processVisibility = processVisibility;
             return this;
         }
 

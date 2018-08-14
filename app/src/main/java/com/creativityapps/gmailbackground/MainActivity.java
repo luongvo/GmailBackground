@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
                 .withBody("this is the body")
                 .withAttachments(fileName)
                 .withUseDefaultSession(false)
-                .withProcessVisibility(true)
+                .withSendingMessage(R.string.sending_email)
                 .withOnSuccessCallback(new BackgroundMail.OnSendingCallback() {
                     @Override
                     public void onSuccess() {
