@@ -10,7 +10,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.creativityapps.gmailbackgroundlibrary.util.GmailSender;
 import com.creativityapps.gmailbackgroundlibrary.util.Utils;
@@ -34,23 +33,18 @@ public class BackgroundMail {
     private String type;
     private boolean useDefaultSession;
     private String sendingMessage;
-    private String sendingMessageSuccess;
-    private String sendingMessageError;
     private boolean processVisibility = true;
     private ArrayList<String> attachments = new ArrayList<>();
     private Context mContext;
-    private OnSuccessCallback onSuccessCallback;
-    private OnFailCallback onFailCallback;
+    private OnSendingCallback onSendingCallback;
 
     public final static String TYPE_PLAIN = "text/plain";
     public final static String TYPE_HTML = "text/html";
 
-    public interface OnSuccessCallback {
+    public interface OnSendingCallback {
         void onSuccess();
-    }
 
-    public interface OnFailCallback {
-        void onFail();
+        void onFail(Exception e);
     }
 
     public BackgroundMail(Fragment fragment) {
@@ -60,8 +54,6 @@ public class BackgroundMail {
     public BackgroundMail(Context context) {
         this.mContext = context;
         this.sendingMessage = context.getString(R.string.msg_sending_email);
-        this.sendingMessageSuccess = context.getString(R.string.msg_email_sent_successfully);
-        this.sendingMessageError = context.getString(R.string.msg_error_sending_email);
     }
 
     private BackgroundMail(Builder builder) {
@@ -78,11 +70,8 @@ public class BackgroundMail {
         type = builder.type;
         useDefaultSession = builder.useDefaultSession;
         setSendingMessage(builder.sendingMessage);
-        setSendingMessageSuccess(builder.sendingMessageSuccess);
-        setSendingMessageError(builder.sendingMessageError);
         processVisibility = builder.processVisibility;
-        setOnSuccessCallback(builder.onSuccessCallback);
-        setOnFailCallback(builder.onFailCallback);
+        setOnSendingCallback(builder.onSendingCallback);
     }
 
     public static Builder newBuilder(Context context) {
@@ -226,32 +215,6 @@ public class BackgroundMail {
         return sendingMessage;
     }
 
-    public void setSendingMessageSuccess(@Nullable String string) {
-        this.sendingMessageSuccess = string;
-    }
-
-    public void setSendingMessageSuccess(@StringRes int strRes) {
-        this.sendingMessageSuccess = mContext.getResources().getString(strRes);
-    }
-
-    @Nullable
-    public String getSendingMessageSuccess() {
-        return sendingMessageSuccess;
-    }
-
-    public void setSendingMessageError(@Nullable String string) {
-        this.sendingMessageError = string;
-    }
-
-    public void setSendingMessageError(@StringRes int strRes) {
-        this.sendingMessageError = mContext.getResources().getString(strRes);
-    }
-
-    @Nullable
-    public String getSeningMessageError() {
-        return sendingMessageError;
-    }
-
     public void addAttachment(@NonNull String attachment) {
         this.attachments.add(attachment);
     }
@@ -273,12 +236,8 @@ public class BackgroundMail {
         return attachments;
     }
 
-    public void setOnSuccessCallback(OnSuccessCallback onSuccessCallback) {
-        this.onSuccessCallback = onSuccessCallback;
-    }
-
-    public void setOnFailCallback(OnFailCallback onFailCallback) {
-        this.onFailCallback = onFailCallback;
+    public void setOnSendingCallback(OnSendingCallback onSendingCallback) {
+        this.onSendingCallback = onSendingCallback;
     }
 
     public void send() {
@@ -298,7 +257,7 @@ public class BackgroundMail {
         new SendEmailTask().execute();
     }
 
-    public class SendEmailTask extends AsyncTask<String, Void, Boolean> {
+    public class SendEmailTask extends AsyncTask<String, Void, Exception> {
         private ProgressDialog progressDialog;
 
         @Override
@@ -313,7 +272,7 @@ public class BackgroundMail {
         }
 
         @Override
-        protected Boolean doInBackground(String... arg0) {
+        protected Exception doInBackground(String... arg0) {
             try {
                 GmailSender sender = new GmailSender(username, password, useDefaultSession);
                 if (!attachments.isEmpty()) {
@@ -325,32 +284,24 @@ public class BackgroundMail {
                 }
                 sender.sendMail(subject, body, username, senderName, mailTo, mailCc, mailBcc, type);
             } catch (Exception e) {
-                e.printStackTrace();
-                return false;
+                return e;
             }
-            return true;
+            return null;
         }
 
         @Override
-        protected void onPostExecute(Boolean result) {
+        protected void onPostExecute(Exception result) {
             super.onPostExecute(result);
             if (progressDialog != null && progressDialog.isShowing()) {
                 progressDialog.dismiss();
             }
 
-            if (result) {
-                if (processVisibility && !TextUtils.isEmpty(sendingMessageSuccess)) {
-                    Toast.makeText(mContext, sendingMessageSuccess, Toast.LENGTH_SHORT).show();
-                }
-                if (onSuccessCallback != null) {
-                    onSuccessCallback.onSuccess();
-                }
-            } else {
-                if (processVisibility && !TextUtils.isEmpty(sendingMessageError)) {
-                    Toast.makeText(mContext, sendingMessageError, Toast.LENGTH_SHORT).show();
-                }
-                if (onFailCallback != null) {
-                    onFailCallback.onFail();
+            if (onSendingCallback != null) {
+                if (result == null) {
+                    onSendingCallback.onSuccess();
+                } else {
+                    result.printStackTrace();
+                    onSendingCallback.onFail(result);
                 }
             }
         }
@@ -370,17 +321,12 @@ public class BackgroundMail {
         private boolean useDefaultSession = true;
         private ArrayList<String> attachments = new ArrayList<>();
         private String sendingMessage;
-        private String sendingMessageSuccess;
-        private String sendingMessageError;
         private boolean processVisibility = true;
-        private OnSuccessCallback onSuccessCallback;
-        private OnFailCallback onFailCallback;
+        private OnSendingCallback onSendingCallback;
 
         private Builder(Context context) {
             this.context = context;
             this.sendingMessage = context.getString(R.string.msg_sending_email);
-            this.sendingMessageSuccess = context.getString(R.string.msg_email_sent_successfully);
-            this.sendingMessageError = context.getString(R.string.msg_error_sending_email);
         }
 
         public Builder withUsername(@NonNull String username) {
@@ -499,38 +445,13 @@ public class BackgroundMail {
             return this;
         }
 
-        public Builder withSendingMessageSuccess(@Nullable String sendingMessageSuccess) {
-            this.sendingMessageSuccess = sendingMessageSuccess;
-            return this;
-        }
-
-        public Builder withSendingMessageSuccess(@StringRes int sendingMessageSuccessRes) {
-            this.sendingMessageSuccess = context.getResources().getString(sendingMessageSuccessRes);
-            return this;
-        }
-
-        public Builder withSendingMessageError(@Nullable String sendingMessageError) {
-            this.sendingMessageError = sendingMessageError;
-            return this;
-        }
-
-        public Builder withSendingMessageError(@StringRes int sendingMessageError) {
-            this.sendingMessageError = context.getResources().getString(sendingMessageError);
-            return this;
-        }
-
         public Builder withProcessVisibility(boolean processVisibility) {
             this.processVisibility = processVisibility;
             return this;
         }
 
-        public Builder withOnSuccessCallback(OnSuccessCallback onSuccessCallback) {
-            this.onSuccessCallback = onSuccessCallback;
-            return this;
-        }
-
-        public Builder withOnFailCallback(OnFailCallback onFailCallback) {
-            this.onFailCallback = onFailCallback;
+        public Builder withOnSuccessCallback(OnSendingCallback onSendingCallback) {
+            this.onSendingCallback = onSendingCallback;
             return this;
         }
 
