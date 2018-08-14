@@ -7,10 +7,10 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.creativityapps.gmailbackgroundlibrary.BackgroundMail;
 
@@ -80,17 +80,16 @@ public class MainActivity extends AppCompatActivity {
                 .withBody("this is the body")
                 .withAttachments(fileName)
                 .withUseDefaultSession(false)
-                .withProcessVisibility(true)
-                .withOnSuccessCallback(new BackgroundMail.OnSuccessCallback() {
+                .withSendingMessage(R.string.sending_email)
+                .withOnSuccessCallback(new BackgroundMail.OnSendingCallback() {
                     @Override
                     public void onSuccess() {
-                        //do some magic
+                        Toast.makeText(MainActivity.this, R.string.msg_email_sent_successfully, Toast.LENGTH_SHORT).show();
                     }
-                })
-                .withOnFailCallback(new BackgroundMail.OnFailCallback() {
+
                     @Override
-                    public void onFail() {
-                        //do some magic
+                    public void onFail(Exception e) {
+                        Toast.makeText(MainActivity.this, R.string.msg_error_sending_email, Toast.LENGTH_SHORT).show();
                     }
                 })
                 .send();

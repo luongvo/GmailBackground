@@ -27,22 +27,23 @@ BackgroundMail.newBuilder(this)
         .withSubject("this is the subject")
         .withBody("this is the body")
         .withAttachments(Environment.getExternalStorageDirectory().getPath() + "/test.txt")
-        .withProcessVisibility(false)
-        .withOnSuccessCallback(new BackgroundMail.OnSuccessCallback() {
+        .withSendingMessage(R.string.sending_email)
+        .withOnSuccessCallback(new BackgroundMail.OnSendingCallback() {
             @Override
             public void onSuccess() {
-                //do some magic
+                // do some magic
             }
-        })
-        .withOnFailCallback(new BackgroundMail.OnFailCallback() {
+            
             @Override
-            public void onFail() {
-                //do some magic
+            public void onFail(Exception e) {
+                // do some magic
             }
         })
         .send();
 ```
-If you have the feature for user to change sender `username` and `password`. You should ignore use default session. See more detail [here](http://docs.oracle.com/javaee/6/api/javax/mail/Session.html#getDefaultInstance)
+- Set `withSendingMessage` to custom message on sending progress dialog. If not, the sending dialog will not be showed.
+
+- If you have the feature for user to change sender `username` and `password`. You should ignore use default session. See more detail [here](http://docs.oracle.com/javaee/6/api/javax/mail/Session.html#getDefaultInstance).
 ```java
 .withUseDefaultSession(false)
 ```
@@ -72,7 +73,6 @@ for attachments you need set READ_EXTERNAL_STORAGE permission in your manifiest
 ```xml
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 ```
-Based on https://github.com/kristijandraca/BackgroundMailLibrary (code cleanup, tweaks, and jitpack support)
 
 **Proguard**
 ```
