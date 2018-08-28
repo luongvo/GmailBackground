@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">GmailBackground</string>
-    <string name="action_settings">Settings</string>
-    <string name="lab_send">Tap the send button</string>
+
+    <string name="send_plain_text_email">Send plain text email</string>
+    <string name="send_html_email">Send html email</string>
+    <string name="send_email_with_attachment">Send email with attachment</string>
 
     <string name="sending_email">Sending email...</string>
     <string name="msg_email_sent_successfully">Your message was sent successfully.</string>
