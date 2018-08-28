@@ -4,11 +4,8 @@ import android.Manifest;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -24,38 +21,27 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.bt_send_text).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainActivityPermissionsDispatcher.sendTestEmailWithPermissionCheck(MainActivity.this);
+                MainActivityPermissionsDispatcher.sendTextEmailWithPermissionCheck(MainActivity.this);
             }
         });
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        findViewById(R.id.bt_send_html).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MainActivityPermissionsDispatcher.sendHtmlEmailWithPermissionCheck(MainActivity.this);
+            }
+        });
+        findViewById(R.id.bt_send_attachment).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MainActivityPermissionsDispatcher.sendAttachedEmailWithPermissionCheck(MainActivity.this);
+            }
+        });
     }
 
     @Override
@@ -65,20 +51,33 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-    void sendTestEmail() {
+    void sendTextEmail() {
+        sendEmail(BackgroundMail.TYPE_PLAIN, null);
+    }
+
+    @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+    void sendHtmlEmail() {
+        sendEmail(BackgroundMail.TYPE_HTML, null);
+    }
+
+    @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+    void sendAttachedEmail() {
         // create a `Test.txt` and locate it on device sdcard and run the example
         String fileName = Environment.getExternalStorageDirectory().getPath() + "/Test.txt";
 
-        BackgroundMail.newBuilder(this)
+        sendEmail(BackgroundMail.TYPE_PLAIN, fileName);
+    }
+
+    private void sendEmail(String type, String fileName) {
+        BackgroundMail.Builder builder = BackgroundMail.newBuilder(this)
                 .withUsername("username@gmail.com")
                 .withPassword("password12345")
                 .withSenderName("Your sender name")
                 .withMailTo("to-email@gmail.com")
                 .withMailCc("cc-email@gmail.com")
                 .withMailBcc("bcc-email@gmail.com")
-                .withSubject("this is the subject")
-                .withBody("this is the body")
-                .withAttachments(fileName)
+                .withSubject("This is the subject")
+                .withType(type)
                 .withUseDefaultSession(false)
                 .withSendingMessage(R.string.sending_email)
                 .withOnSuccessCallback(new BackgroundMail.OnSendingCallback() {
@@ -91,7 +90,26 @@ public class MainActivity extends AppCompatActivity {
                     public void onFail(Exception e) {
                         Toast.makeText(MainActivity.this, R.string.msg_error_sending_email, Toast.LENGTH_SHORT).show();
                     }
-                })
-                .send();
+                });
+
+        if (BackgroundMail.TYPE_HTML.equalsIgnoreCase(type)) {
+            builder.withBody("<!DOCTYPE html>\n" +
+                    "<html>\n" +
+                    "<body>\n" +
+                    "\n" +
+                    "<h1>This is test html title</h1>\n" +
+                    "\n" +
+                    "<p>This is test html paragraph.</p>\n" +
+                    "\n" +
+                    "</body>\n" +
+                    "</html>\n");
+        } else {
+            builder.withBody("This is test plain body");
+        }
+        if (fileName != null) {
+            builder.withAttachments(fileName);
+        }
+
+        builder.send();
     }
 }
