@@ -2,6 +2,8 @@ package com.creativityapps.gmailbackgroundlibrary.util;
 
 import android.text.TextUtils;
 
+import com.creativityapps.gmailbackgroundlibrary.BackgroundMail;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,7 +31,7 @@ public class GmailSender extends javax.mail.Authenticator {
     private String user;
     private String password;
     private Session session;
-    private Multipart _multipart;
+    private Multipart multipart;
 
     static {
         Security.addProvider(new JSSEProvider());
@@ -50,7 +52,7 @@ public class GmailSender extends javax.mail.Authenticator {
         props.setProperty("mail.smtp.quitwait", "false");
 
         session = useDefaultSession ? Session.getDefaultInstance(props, this) : Session.getInstance(props, this);
-        _multipart = new MimeMultipart();
+        multipart = new MimeMultipart();
     }
 
     protected PasswordAuthentication getPasswordAuthentication() {
@@ -67,12 +69,22 @@ public class GmailSender extends javax.mail.Authenticator {
 
         DataHandler handler = new DataHandler(new ByteArrayDataSource(body.getBytes(), type));
         message.setDataHandler(handler);
-        message.setText(body);
-        if (_multipart.getCount() > 0) {
+
+        if (multipart.getCount() > 0 || BackgroundMail.TYPE_HTML.equalsIgnoreCase(type)) {
             BodyPart messageBodyPart = new MimeBodyPart();
             messageBodyPart.setText(body);
-            _multipart.addBodyPart(messageBodyPart);
-            message.setContent(_multipart);
+            multipart.addBodyPart(messageBodyPart);
+            message.setContent(multipart);
+
+            if (BackgroundMail.TYPE_HTML.equalsIgnoreCase(type)) {
+                // Content type has to be set after the message is put together
+                // Then saveChanges() must be called for it to take effect
+                messageBodyPart.setHeader("Content-Type", type);
+                message.saveChanges();
+            }
+        } else {
+            // text/plain
+            message.setText(body);
         }
 
         if (!TextUtils.isEmpty(mailTo)) {
@@ -103,12 +115,12 @@ public class GmailSender extends javax.mail.Authenticator {
     }
 
     public void addAttachment(String filename) throws Exception {
-        BodyPart messageBodyPart = new MimeBodyPart();
+        BodyPart fileBodyPart = new MimeBodyPart();
         DataSource source = new FileDataSource(filename);
-        messageBodyPart.setDataHandler(new DataHandler(source));
-        messageBodyPart.setFileName(source.getName());
+        fileBodyPart.setDataHandler(new DataHandler(source));
+        fileBodyPart.setFileName(source.getName());
 
-        _multipart.addBodyPart(messageBodyPart);
+        multipart.addBodyPart(fileBodyPart);
     }
 
     public class ByteArrayDataSource implements DataSource {
