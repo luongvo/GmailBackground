@@ -40,7 +40,15 @@ public class GmailSender extends javax.mail.Authenticator {
     public GmailSender(String user, String password, boolean useDefaultSession) {
         this.user = user;
         this.password = password;
-
+        
+        MailSSLSocketFactory socketFactory = null;
+        try {
+            socketFactory = new MailSSLSocketFactory();
+            socketFactory.setTrustAllHosts(true);
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        }
+        
         Properties props = new Properties();
         props.setProperty("mail.transport.protocol", "smtp");
         props.setProperty("mail.host", GMAIL_HOST);
@@ -50,6 +58,8 @@ public class GmailSender extends javax.mail.Authenticator {
         props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
         props.put("mail.smtp.socketFactory.fallback", "false");
         props.setProperty("mail.smtp.quitwait", "false");
+        props.put("mail.smtps.socketFactory", socketFactory);
+        props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
 
         session = useDefaultSession ? Session.getDefaultInstance(props, this) : Session.getInstance(props, this);
         multipart = new MimeMultipart();
